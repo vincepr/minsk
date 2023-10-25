@@ -84,6 +84,10 @@ namespace Minsk.CodeAnalysis.Binding
     // our representation of Types
     internal sealed class Binder
     {
+        // because our Binder might fail we collect _diagostics about errors and expose those with an IEnumerable     
+        private readonly List<string> _diagnostics = new List<string>();
+        public IEnumerable<string> Diagnostics => _diagnostics;     
+
         public BoundExpression BindExpression(ExpressionSyntax syntax)
         {
             switch (syntax.Kind)
@@ -108,21 +112,31 @@ namespace Minsk.CodeAnalysis.Binding
 
         private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
         {
-            var boundOperatorKind = BindUnaryOperatorKind(syntax.OperatorToken.Kind);
             var boundOperand = BindExpression(syntax.Operand);
-            return new BoundUnaryExpression(boundOperatorKind, boundOperand);
+            var boundOperatorKind = BindUnaryOperatorKind(syntax.OperatorToken.Kind, boundOperand.Type);
+            if(boundOperatorKind == null) {
+                _diagnostics.Add($"Unary operator '{syntax.OperatorToken.Text}' is not defined for type {boundOperand.Type}");
+                return boundOperand;
+            }
+            return new BoundUnaryExpression(boundOperatorKind.Value, boundOperand);
         }
 
         private BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
         {
             var boundLeft = BindExpression(syntax.Left);
-            var boundOperatorKind = BindBinaryOperatorKind(syntax.OperatorToken.Kind);
             var boundRight = BindExpression(syntax.Right);
-            return new BoundBinaryExpression(boundLeft, boundOperatorKind, boundRight);
+            var boundOperatorKind = BindBinaryOperatorKind(syntax.OperatorToken.Kind, boundLeft.Type, boundRight.Type);
+            if(boundOperatorKind == null) {
+                _diagnostics.Add($"Unary operator '{syntax.OperatorToken.Text}' is not defined for types {boundLeft.Type} and {boundRight.Type}");
+                return boundLeft;
+            }
+            return new BoundBinaryExpression(boundLeft, boundOperatorKind.Value, boundRight);
         }
 
-        private BoundUnaryOperatorKind BindUnaryOperatorKind(SyntaxKind kind)
+        private BoundUnaryOperatorKind? BindUnaryOperatorKind(SyntaxKind kind, Type operandType)
         {
+            if (operandType == typeof(int)) return null;    // we have no info about what this could be here
+
             switch (kind)
             {
                 case SyntaxKind.PlusToken:
@@ -134,8 +148,10 @@ namespace Minsk.CodeAnalysis.Binding
             }
         }
 
-        private BoundBinaryOperatorKind BindBinaryOperatorKind(SyntaxKind kind)
+        private BoundBinaryOperatorKind? BindBinaryOperatorKind(SyntaxKind kind, Type leftType, Type rightType)
         {
+            if (leftType != typeof(int) || rightType != typeof(int)) return null;    // we have no info about what this could be here
+
             switch (kind)
             {
                 case SyntaxKind.PlusToken:

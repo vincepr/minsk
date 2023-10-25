@@ -12,7 +12,6 @@ namespace Minsk.CodeAnalysis
             _root = root;
         }
 
-
         public int Evaluate()
         {
             return EvaluateExpression(_root);
