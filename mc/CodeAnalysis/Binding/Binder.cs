@@ -7,37 +7,44 @@ namespace Minsk.CodeAnalysis.Binding
 
     // The binder walks our Already Existing Syntax Tree and creates this
     // structure.
-    internal enum BoundNodeKind{
+    internal enum BoundNodeKind
+    {
         LiteralExpression,
         UnaryExpression
     }
 
-    internal abstract class BoundNode{
-        public abstract BoundNodeKind Kind {get;}
+    internal abstract class BoundNode
+    {
+        public abstract BoundNodeKind Kind { get; }
     }
 
-    internal abstract class BoundExpression : BoundNode{
-        public abstract Type Type {get;}
+    internal abstract class BoundExpression : BoundNode
+    {
+        public abstract Type Type { get; }
     }
 
-    internal enum BoundUnaryOperatorKind{
+    internal enum BoundUnaryOperatorKind
+    {
         Identity,
         Negation,
     }
 
     internal sealed class BoundLiteralExpression : BoundExpression
     {
-        public BoundLiteralExpression(object value){
+        public BoundLiteralExpression(object value)
+        {
             Value = value;
         }
         public override BoundNodeKind Kind => BoundNodeKind.LiteralExpression;
         public override Type Type => Value.GetType();
-        public object Value {get;}
+        public object Value { get; }
     }
 
-    internal sealed class BoundUnaryExpression : BoundExpression{
+    internal sealed class BoundUnaryExpression : BoundExpression
+    {
 
-        public BoundUnaryExpression(BoundUnaryOperatorKind operatorKind, BoundExpression operand){
+        public BoundUnaryExpression(BoundUnaryOperatorKind operatorKind, BoundExpression operand)
+        {
             OperatorKind = operatorKind;
             Operand = operand;
         }
@@ -48,7 +55,8 @@ namespace Minsk.CodeAnalysis.Binding
         public BoundExpression Operand { get; }
     }
 
-    internal enum BoundBinaryOperatorKind{
+    internal enum BoundBinaryOperatorKind
+    {
         Addition,
         Subtraction,
         Multiplication,
@@ -58,7 +66,8 @@ namespace Minsk.CodeAnalysis.Binding
 
     internal sealed class BoundBinaryExpression : BoundExpression
     {
-        public BoundBinaryExpression(BoundExpression left, BoundBinaryOperatorKind operatorKind, BoundExpression right){
+        public BoundBinaryExpression(BoundExpression left, BoundBinaryOperatorKind operatorKind, BoundExpression right)
+        {
             Left = left;
             OperatorKind = operatorKind;
             Right = right;
@@ -66,15 +75,17 @@ namespace Minsk.CodeAnalysis.Binding
         public override BoundNodeKind Kind => BoundNodeKind.LiteralExpression;
         public override Type Type => Left.Type;
 
-        public BoundExpression Left {get;}
-        public BoundBinaryOperatorKind OperatorKind {get;}
-        public BoundExpression Right {get;}
+        public BoundExpression Left { get; }
+        public BoundBinaryOperatorKind OperatorKind { get; }
+        public BoundExpression Right { get; }
     }
 
     // Our construct to walk the (already existing) Syntax-Tree and create
     // our representation of Types
-    internal sealed class Binder{
-        public BoundExpression BindExpression(ExpressionSyntax syntax){
+    internal sealed class Binder
+    {
+        public BoundExpression BindExpression(ExpressionSyntax syntax)
+        {
             switch (syntax.Kind)
             {
                 case SyntaxKind.LiteralExpression:
@@ -88,19 +99,22 @@ namespace Minsk.CodeAnalysis.Binding
             }
         }
 
-        private BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax){
+        private BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
+        {
             var value = syntax.LiteralToken.Value as int? ?? 0;
             return new BoundLiteralExpression(value);
 
         }
 
-        private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax){
+        private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
+        {
             var boundOperatorKind = BindUnaryOperatorKind(syntax.OperatorToken.Kind);
             var boundOperand = BindExpression(syntax.Operand);
             return new BoundUnaryExpression(boundOperatorKind, boundOperand);
         }
 
-        private BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax){
+        private BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
+        {
             var boundLeft = BindExpression(syntax.Left);
             var boundOperatorKind = BindBinaryOperatorKind(syntax.OperatorToken.Kind);
             var boundRight = BindExpression(syntax.Right);

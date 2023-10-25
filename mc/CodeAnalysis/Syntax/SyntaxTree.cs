@@ -3,7 +3,7 @@ namespace Minsk.CodeAnalysis.Syntax
     // The main Interface/API to interact with to start the parsing process
     public sealed class SyntaxTree
     {
-        public SyntaxTree( IEnumerable<string> diagnostics, ExpressionSyntax root, SyntaxToken eof)
+        public SyntaxTree(IEnumerable<string> diagnostics, ExpressionSyntax root, SyntaxToken eof)
         {
             Diagnostics = diagnostics.ToArray();
             Root = root;

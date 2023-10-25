@@ -34,7 +34,7 @@ namespace Minsk.CodeAnalysis.Syntax
             if (_position >= _text.Length)
             {
                 return new SyntaxToken(SyntaxKind.EOFToken, _position, "\0", null);
-            }    
+            }
 
             // Token is Digit 0-9
             if (char.IsDigit(Current))
@@ -44,7 +44,7 @@ namespace Minsk.CodeAnalysis.Syntax
                     Next();
                 var length = _position - start;
                 var text = _text.Substring(start, length);
-                if (! int.TryParse(text, out var value))
+                if (!int.TryParse(text, out var value))
                     _diagnostics.Add($"ERROR: failed TryParse '{text}' to INT32, in Lexer.NextToken()");
                 return new SyntaxToken(SyntaxKind.NumberToken, start, text, value);
             }
@@ -79,7 +79,7 @@ namespace Minsk.CodeAnalysis.Syntax
 
             // badtoken default case:
             _diagnostics.Add($"ERROR: bad character input: '{Current}' in Lexer.NextToken()");
-            return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1,1), null);
+            return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1, 1), null);
         }
     }
 }

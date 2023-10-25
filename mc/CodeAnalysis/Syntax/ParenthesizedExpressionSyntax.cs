@@ -18,7 +18,7 @@ namespace Minsk.CodeAnalysis.Syntax
         {
             yield return OpenParenthesisToken;
             yield return Expression;
-            yield return CloseParenthesisToken; 
+            yield return CloseParenthesisToken;
         }
     }
 }
