@@ -7,9 +7,9 @@ namespace Minsk.CodeAnalysis
     public sealed class Evaluator
     {
         private readonly ExpressionSyntax _root;
-        public Evaluator(ExpressionSyntax _root)
+        public Evaluator(ExpressionSyntax root)
         {
-            this._root = _root;
+            _root = root;
         }
 
 

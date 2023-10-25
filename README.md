@@ -24,6 +24,5 @@ C# is currently subject in my education and the video-guide by [Immo Landwerth](
 - The AST on the other hand is an abstract representation of the input. No whitespaces, comments etc. But also Other Info like enclosing Brackets (). Since Info about those gets represented by how the tree itself is structured.
 
 ## To Add Type checking
-Episode 2 - 38:00 and onward.
 
-The idea is to create an aditional Tree (Bound Tree) to store information about what types expressions reslove into etc.
+The idea is to create an aditional Tree (Bound Tree aka intermediate representation) to store information about what types expressions reslove into etc.
