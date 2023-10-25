@@ -7,78 +7,7 @@ namespace Minsk.CodeAnalysis.Binding
 
     // The binder walks our Already Existing Syntax Tree and creates this
     // structure.
-    internal enum BoundNodeKind
-    {
-        LiteralExpression,
-        UnaryExpression
-    }
 
-    internal abstract class BoundNode
-    {
-        public abstract BoundNodeKind Kind { get; }
-    }
-
-    internal abstract class BoundExpression : BoundNode
-    {
-        public abstract Type Type { get; }
-    }
-
-    internal enum BoundUnaryOperatorKind
-    {
-        Identity,
-        Negation,
-    }
-
-    internal sealed class BoundLiteralExpression : BoundExpression
-    {
-        public BoundLiteralExpression(object value)
-        {
-            Value = value;
-        }
-        public override BoundNodeKind Kind => BoundNodeKind.LiteralExpression;
-        public override Type Type => Value.GetType();
-        public object Value { get; }
-    }
-
-    internal sealed class BoundUnaryExpression : BoundExpression
-    {
-
-        public BoundUnaryExpression(BoundUnaryOperatorKind operatorKind, BoundExpression operand)
-        {
-            OperatorKind = operatorKind;
-            Operand = operand;
-        }
-
-        public override BoundNodeKind Kind => BoundNodeKind.UnaryExpression;
-        public override Type Type => Operand.Type;
-        public BoundUnaryOperatorKind OperatorKind { get; }
-        public BoundExpression Operand { get; }
-    }
-
-    internal enum BoundBinaryOperatorKind
-    {
-        Addition,
-        Subtraction,
-        Multiplication,
-        Division,
-
-    }
-
-    internal sealed class BoundBinaryExpression : BoundExpression
-    {
-        public BoundBinaryExpression(BoundExpression left, BoundBinaryOperatorKind operatorKind, BoundExpression right)
-        {
-            Left = left;
-            OperatorKind = operatorKind;
-            Right = right;
-        }
-        public override BoundNodeKind Kind => BoundNodeKind.LiteralExpression;
-        public override Type Type => Left.Type;
-
-        public BoundExpression Left { get; }
-        public BoundBinaryOperatorKind OperatorKind { get; }
-        public BoundExpression Right { get; }
-    }
 
     // Our construct to walk the (already existing) Syntax-Tree and create
     // our representation of Types
@@ -86,7 +15,7 @@ namespace Minsk.CodeAnalysis.Binding
     {
         // because our Binder might fail we collect _diagostics about errors and expose those with an IEnumerable     
         private readonly List<string> _diagnostics = new List<string>();
-        public IEnumerable<string> Diagnostics => _diagnostics;     
+        public IEnumerable<string> Diagnostics => _diagnostics;
 
         public BoundExpression BindExpression(ExpressionSyntax syntax)
         {
@@ -114,7 +43,8 @@ namespace Minsk.CodeAnalysis.Binding
         {
             var boundOperand = BindExpression(syntax.Operand);
             var boundOperatorKind = BindUnaryOperatorKind(syntax.OperatorToken.Kind, boundOperand.Type);
-            if(boundOperatorKind == null) {
+            if (boundOperatorKind == null)
+            {
                 _diagnostics.Add($"Unary operator '{syntax.OperatorToken.Text}' is not defined for type {boundOperand.Type}");
                 return boundOperand;
             }
@@ -126,7 +56,8 @@ namespace Minsk.CodeAnalysis.Binding
             var boundLeft = BindExpression(syntax.Left);
             var boundRight = BindExpression(syntax.Right);
             var boundOperatorKind = BindBinaryOperatorKind(syntax.OperatorToken.Kind, boundLeft.Type, boundRight.Type);
-            if(boundOperatorKind == null) {
+            if (boundOperatorKind == null)
+            {
                 _diagnostics.Add($"Unary operator '{syntax.OperatorToken.Text}' is not defined for types {boundLeft.Type} and {boundRight.Type}");
                 return boundLeft;
             }
