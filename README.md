@@ -1,4 +1,5 @@
 # Learning how to write a compiler
+- timestamp 1:08:27 - next adding booleans - todo self before watching
 
 Writing a Lexer - Parser - Interpreter should provide me a better grasp about usage of Trees and how to manage a growing set of functionalty. Coding in a way to keep tings extendable etc.
 
