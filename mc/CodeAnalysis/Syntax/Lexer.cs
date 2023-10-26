@@ -22,6 +22,15 @@ namespace Minsk.CodeAnalysis.Syntax
             if (_position + ahead >= _text.Length)
                 return '\0';
             return _text[_position + ahead];
+        private char Current => Peek(0);
+        private char Lookahead => Peek(1);
+
+        // Peek(0) returns current char, peek(1) the one after etc... Does NOT consume token
+        private char Peek(int ahead)
+        {
+            if (_position + ahead >= _text.Length)
+                return '\0';
+            return _text[_position + ahead];
         }
 
         // iterator to return the next position
@@ -64,6 +73,8 @@ namespace Minsk.CodeAnalysis.Syntax
             // Token is text based (keyword, identifier like variable name etc.) 
             if (char.IsLetter(Current))
             {
+            if (char.IsLetter(Current))
+            {
                 var start = _position;
                 while (char.IsLetter(Current))
                     Next();
@@ -74,6 +85,7 @@ namespace Minsk.CodeAnalysis.Syntax
             }
             switch (Current)
             {
+                // arithmetic operators + - * / ( )
                 // arithmetic operators + - * / ( )
                 case '+':
                     return new SyntaxToken(SyntaxKind.PlusToken, _position++, "+", null);
