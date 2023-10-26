@@ -7,6 +7,7 @@ namespace Minsk.CodeAnalysis.Syntax
         EOFToken,
         WhitespaceToken,
         NumberToken,        // represents i32 at the moment
+        IdentifierToken,    // variable/class names etc
 
         // Operators
         PlusToken,
@@ -20,6 +21,10 @@ namespace Minsk.CodeAnalysis.Syntax
         LiteralExpression,
         BinaryExpression,
         ParenthesizedExpressionSyntax,
-        UnaryExpression
+        UnaryExpression,
+        
+        // Keywords
+        FalseKeyword,
+        TrueKeyword,
     }
 }

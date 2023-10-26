@@ -36,5 +36,19 @@ namespace Minsk.CodeAnalysis.Syntax
                     return 0;
             }
         }
+
+        // handles maping over different kinds of keywords (those should get prio over var-identifiers etc)
+        public static SyntaxKind GetKeywordKind(string text)
+        {
+            switch (text)
+            {
+                case "true":
+                    return SyntaxKind.TrueKeyword;
+                case "false":
+                    return SyntaxKind.FalseKeyword;
+                default:
+                    return SyntaxKind.IdentifierToken;
+            }
+        }
     }
 }

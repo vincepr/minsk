@@ -36,7 +36,7 @@ namespace Minsk.CodeAnalysis.Syntax
                 return new SyntaxToken(SyntaxKind.EOFToken, _position, "\0", null);
             }
 
-            // Token is Digit 0-9
+            // Token is Value Number - of Digit 0-9
             if (char.IsDigit(Current))
             {
                 var start = _position;
@@ -60,6 +60,16 @@ namespace Minsk.CodeAnalysis.Syntax
                 return new SyntaxToken(SyntaxKind.WhitespaceToken, start, text, null);
             }
 
+            // Token is text based (keyword, identifier like variable name etc.) 
+            if (char.IsLetter(Current)){
+                var start = _position;
+                while (char.IsLetter(Current))
+                    Next();
+                var length = _position - start;
+                var text = _text.Substring(start, length);
+                var kind = SyntaxFacts.GetKeywordKind(text);    // keyword-recognition gets handled here
+                return new SyntaxToken(kind, start, text, null);
+            }
             // arithmetic operators + - * / ( )
             switch (Current)
             {
