@@ -90,8 +90,6 @@ namespace Minsk.CodeAnalysis.Syntax
                 case ')':
                     return new SyntaxToken(SyntaxKind.CloseParenthesisToken, _position++, ")", null);
                 // logical operators
-                case '!':
-                    return new SyntaxToken(SyntaxKind.BangToken, _position++, "!", null);
                 case '&':
                     {
                         if (Lookahead == '&')
@@ -103,6 +101,19 @@ namespace Minsk.CodeAnalysis.Syntax
                         if (Lookahead == '|')
                             return new SyntaxToken(SyntaxKind.PipePipeToken, _position += 2, "||", null);
                         break;
+                    }
+                case '=':
+                    {
+                        if (Lookahead == '=')
+                            return new SyntaxToken(SyntaxKind.EqualsEqualsToken, _position += 2, "==", null);
+                        break;
+                    }
+                case '!':
+                    {
+                        if (Lookahead == '=')
+                            return new SyntaxToken(SyntaxKind.BangEqualstoken, _position += 2, "!=", null);
+                        else
+                            return new SyntaxToken(SyntaxKind.BangToken, _position++, "!", null);
                     }
             }
 

@@ -11,7 +11,7 @@ namespace Minsk.CodeAnalysis.Syntax
                 case SyntaxKind.PlusToken:
                 case SyntaxKind.MinusToken:
                 case SyntaxKind.BangToken:
-                    return 5;
+                    return 6;
 
                 // while Precedence==0 -> no Binary Operator found
                 default:
@@ -26,10 +26,14 @@ namespace Minsk.CodeAnalysis.Syntax
                 // higher nr gets parsed with priority
                 case SyntaxKind.MultiplicationToken:
                 case SyntaxKind.DivideToken:
-                    return 4;
+                    return 5;
 
                 case SyntaxKind.PlusToken:
                 case SyntaxKind.MinusToken:
+                    return 4;
+
+                case SyntaxKind.EqualsEqualsToken:
+                case SyntaxKind.BangEqualstoken:
                     return 3;
 
                 case SyntaxKind.AmpersandAmpersandToken:

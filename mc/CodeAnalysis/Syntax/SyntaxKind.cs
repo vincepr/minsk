@@ -17,6 +17,8 @@ namespace Minsk.CodeAnalysis.Syntax
         BangToken,
         AmpersandAmpersandToken,
         PipePipeToken,
+        EqualsEqualsToken,
+        BangEqualstoken,
         OpenParenthesisToken,
         CloseParenthesisToken,
 

@@ -9,7 +9,7 @@ namespace Minsk.CodeAnalysis.Binding
             Right = right;
         }
         public override BoundNodeKind Kind => BoundNodeKind.LiteralExpression;
-        public override Type Type => Left.Type;
+        public override Type Type => Op.Type;
 
         public BoundExpression Left { get; }
         public BoundBinaryOperator Op { get; }

@@ -59,11 +59,14 @@ namespace Minsk.CodeAnalysis
                         return (bool) left && (bool) right;
                     case BoundBinaryOperatorKind.LogicalOr:
                         return (bool) left || (bool) right;
+                    case BoundBinaryOperatorKind.Equals:
+                        return Equals(left, right);
+                    case BoundBinaryOperatorKind.NotEquals:
+                        return !Equals(left, right);
                     default:
                         throw new Exception($"Unexpected binary operator '{b.Op.Kind}' , in Evaluator.EvaluateExpression()");
                 }
             }
-
             throw new Exception($"Unexpected node: '{node.Kind}' , in Evaluator.EvaluateExpression()");
         }
     }
