@@ -13,14 +13,15 @@ namespace Minsk.CodeAnalysis.Syntax
         }
 
         public IEnumerable<string> Diagnostics => _diagnostics; // exposing our Error Handling
-        private char Current
+        private char Current => Peek(0);
+        private char Lookahead => Peek(1);
+
+        // Peek(0) returns current char, peek(1) the one after etc... Does NOT consume token
+        private char Peek(int ahead)
         {
-            get
-            {
-                if (_position >= _text.Length)
-                    return '\0';
-                return _text[_position];
-            }
+            if (_position + ahead >= _text.Length)
+                return '\0';
+            return _text[_position + ahead];
         }
 
         // iterator to return the next position
@@ -61,7 +62,8 @@ namespace Minsk.CodeAnalysis.Syntax
             }
 
             // Token is text based (keyword, identifier like variable name etc.) 
-            if (char.IsLetter(Current)){
+            if (char.IsLetter(Current))
+            {
                 var start = _position;
                 while (char.IsLetter(Current))
                     Next();
@@ -70,9 +72,9 @@ namespace Minsk.CodeAnalysis.Syntax
                 var kind = SyntaxFacts.GetKeywordKind(text);    // keyword-recognition gets handled here
                 return new SyntaxToken(kind, start, text, null);
             }
-            // arithmetic operators + - * / ( )
             switch (Current)
             {
+                // arithmetic operators + - * / ( )
                 case '+':
                     return new SyntaxToken(SyntaxKind.PlusToken, _position++, "+", null);
                 case '-':
@@ -85,6 +87,21 @@ namespace Minsk.CodeAnalysis.Syntax
                     return new SyntaxToken(SyntaxKind.OpenParenthesisToken, _position++, "(", null);
                 case ')':
                     return new SyntaxToken(SyntaxKind.CloseParenthesisToken, _position++, ")", null);
+                // logical operators
+                case '!':
+                    return new SyntaxToken(SyntaxKind.BangToken, _position++, "!", null);
+                case '&':
+                    {
+                        if (Lookahead == '&')
+                            return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, _position += 2, "&&", null);
+                        break;
+                    }
+                case '|':
+                    {
+                        if (Lookahead == '|')
+                            return new SyntaxToken(SyntaxKind.PipePipeToken, _position += 2, "||", null);
+                        break;
+                    }
             }
 
             // badtoken default case:

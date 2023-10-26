@@ -9,11 +9,14 @@ namespace Minsk.CodeAnalysis.Syntax
         NumberToken,        // represents i32 at the moment
         IdentifierToken,    // variable/class names etc
 
-        // Operators
+        // Operators 
         PlusToken,
         MinusToken,
         MultiplicationToken,
         DivideToken,
+        BangToken,
+        AmpersandAmpersandToken,
+        PipePipeToken,
         OpenParenthesisToken,
         CloseParenthesisToken,
 

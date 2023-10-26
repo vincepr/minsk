@@ -1,5 +1,5 @@
 # Learning how to write a compiler
-- timestamp 1:18:27 - next adding more operators like and/or
+- timestamp 1:31:50 - next better Binding of types
 
 Writing a Lexer - Parser - Interpreter should provide me a better grasp about usage of Trees and how to manage a growing set of functionalty. Coding in a way to keep tings extendable etc.
 
