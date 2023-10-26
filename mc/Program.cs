@@ -1,9 +1,12 @@
-﻿// See https://aka.ms/new-console-template for more information
-
+﻿// https://www.youtube.com/watch?v=3XM9vUGduhk&list=PLRAdsfhKI4OWNOSfS7EUu5GRAVmze1t2y&index=2
+// 13:50
 using Minsk.CodeAnalysis;
+using Minsk.CodeAnalysis.Binding;
+using Minsk.CodeAnalysis.Syntax;
 
 namespace Minsk
 {
+
     // 1 + 2 * 3
     // gets parsed into a treel like:
     //
@@ -13,16 +16,15 @@ namespace Minsk
     //     / \
     //    2   3
 
-    internal class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main()
         {
-            Console.WriteLine("#showTree : to enable parse-tree information");
-            Console.WriteLine("#cls : clear the Terminal");
+            Console.WriteLine("type: '#showTree' \t: enable parse-tree information");
+            Console.WriteLine("type: '#cls' \t: clear the Terminal");
             bool showTree = false;
             while (true)
             {
-                var oldColor = Console.ForegroundColor;
                 // get input
                 Console.Write("> ");
                 var line = Console.ReadLine();
@@ -33,38 +35,45 @@ namespace Minsk
                 if (line == "#showTree")
                 {
                     showTree = !showTree;
-                    Console.WriteLine(showTree ? "ENABLED showing parse-tree." : "disabled showing parse-tree");
+                    Console.WriteLine(showTree ? "ENABLED showing parse-tree." : "NOT showing parse-tree");
                     continue;
-                } else if (line == "#cls")
+                }
+                else if (line == "#cls")
                 {
                     Console.Clear();
                     continue;
                 }
 
-                // create tree
+                // create the syntax tree - 
                 var syntaxTree = SyntaxTree.Parse(line);
+                // next parse the syntax tree again and add some additional info like Types to it -> bound-tree
+                var binder = new Binder();
+                var boundExpression = binder.BindExpression(syntaxTree.Root);
+                var diagnostics = syntaxTree.Diagnostics.Concat(binder.Diagnostics).ToArray();
+
 
                 // optional showing of parse-tree
                 if (showTree)
                 {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                PrettyPrint(syntaxTree.Root);
-                Console.ForegroundColor = oldColor;
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    PrettyPrint(syntaxTree.Root);
+                    Console.ResetColor();
                 }
 
-                // print diagnostics OR result
-                if (syntaxTree.Diagnostics.Any())
+                // print the result of the evaluation
+                if (!diagnostics.Any())
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    foreach (var d in syntaxTree.Diagnostics)
-                        Console.WriteLine(d);
-                    Console.ForegroundColor = oldColor;
-                }
-                else
-                {
-                    var eval = new Evaluator(syntaxTree.Root);
+                    var eval = new Evaluator(boundExpression);
                     var result = eval.Evaluate();
                     Console.WriteLine(result.ToString());
+                }
+                // print diagnostics instead if we encountered an ERROR   
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    foreach (var d in diagnostics)
+                        Console.WriteLine(d);
+                    Console.ResetColor();
                 }
             }
         }
@@ -73,7 +82,7 @@ namespace Minsk
         //   ├─PlusToken
         //   └─NumberExpression
         //     └─NumberToken 2
-        static void PrettyPrint( SyntaxNode node, string indent="", bool isLast=true)
+        static void PrettyPrint(SyntaxNode node, string indent = "", bool isLast = true)
         {
             Console.Write(indent);
             Console.Write(isLast ? "└─" : "├─");
@@ -83,11 +92,11 @@ namespace Minsk
                 Console.Write(" ");
                 Console.Write(t.Value);
             }
-            Console.WriteLine() ;
+            Console.WriteLine();
             indent += isLast ? "  " : "│ ";
-            var lastChild = node.GetChildren().LastOrDefault(); 
+            var lastChild = node.GetChildren().LastOrDefault();
             foreach (var child in node.GetChildren())
-                PrettyPrint(child, indent, child==lastChild);
+                PrettyPrint(child, indent, child == lastChild);
         }
     }
 }
